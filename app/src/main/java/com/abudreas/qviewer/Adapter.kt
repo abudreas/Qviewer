@@ -1,14 +1,16 @@
 package com.abudreas.qviewer
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 
 
-class Adapter(private val dataSet: List<Category>) :
+class Adapter(private val dataSet: List<Category>,val context:Context) :
         RecyclerView.Adapter<Adapter.ViewHolder>() {
 
         /**
@@ -21,6 +23,7 @@ class Adapter(private val dataSet: List<Category>) :
             val tvAtemp = view.findViewById<TextView>(R.id.tv_attempted)
             val tvCorrect = view.findViewById<TextView>(R.id.tv_correct)
             val tvCont = view.findViewById<TextView>(R.id.tv_promt)
+            val card = view.findViewById<ConstraintLayout>(R.id.card)
            fun bind(catg:Category){
                 tvCatg.text = catg.name
                tvTotal.text = "Number: " + catg.total.toString()
@@ -31,7 +34,9 @@ class Adapter(private val dataSet: List<Category>) :
                }else{
                    tvCont.text="Continue"
                }
-
+                if(catg.name=="All Questions"){
+                    card.setBackgroundResource(R.drawable.card_all)
+                }
            }
         }
 
@@ -50,6 +55,12 @@ class Adapter(private val dataSet: List<Category>) :
             // Get element from your dataset at this position and replace the
             // contents of the view with that element
             viewHolder.bind( dataSet[position])
+            viewHolder.card.setOnClickListener {
+                val intent = Intent(context,Questions::class.java)
+                intent.putExtra("catg",dataSet[position].name)
+                intent.putExtra("tableName",dataSet[position].tableName)
+                context.startActivity(intent)
+            }
         }
 
         // Return the size of your dataset (invoked by the layout manager)
