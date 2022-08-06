@@ -36,6 +36,8 @@ class Adapter(private val dataSet: List<Category>,val context:Context) :
                }
                 if(catg.name=="All Questions"){
                     card.setBackgroundResource(R.drawable.card_all)
+                }else{
+                    card.setBackgroundResource(R.drawable.card)
                 }
            }
         }
@@ -57,6 +59,7 @@ class Adapter(private val dataSet: List<Category>,val context:Context) :
             viewHolder.bind( dataSet[position])
             viewHolder.card.setOnClickListener {
                 val intent = Intent(context,Questions::class.java)
+
                 intent.putExtra("catg",dataSet[position].name)
                 intent.putExtra("tableName",dataSet[position].tableName)
                 context.startActivity(intent)

@@ -4,6 +4,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\kp\\AndroidStudioProjects\\Keys\\myKey2.jks')
+            storePassword 'sartervirus'
+            keyPassword 'sartervirus'
+            keyAlias 'key1'
+        }
+    }
     compileSdk 32
 
     defaultConfig {

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layoutDirection="ltr">
+    android:layoutDirection="ltr"
+    android:textDirection="ltr">
 
     <TextView
         android:id="@+id/textView"
@@ -12,7 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layoutDirection="ltr"
         android:text="Question"
+        android:textDirection="ltr"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
@@ -21,6 +24,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layoutDirection="ltr"
+        android:textDirection="ltr"
         app:layout_constraintStart_toEndOf="@+id/sp_selectQuest"
         app:layout_constraintTop_toTopOf="@+id/textView" />
 
@@ -28,7 +33,11 @@
         android:id="@+id/tv_percent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="70dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="4dp"
+        android:layoutDirection="ltr"
+        android:textDirection="ltr"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tv_ofTotal"
         app:layout_constraintTop_toTopOf="@+id/tv_ofTotal"
         tools:text="Correct = " />
@@ -39,6 +48,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="-12dp"
+        android:layoutDirection="ltr"
+        android:textDirection="ltr"
         app:layout_constraintStart_toEndOf="@+id/textView"
         app:layout_constraintTop_toTopOf="@+id/textView" />
 
@@ -46,6 +57,8 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layoutDirection="ltr"
+        android:textDirection="ltr"
         android:theme="@style/Theme.Qviewer.AppBarOverlay"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -55,6 +68,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            android:layoutDirection="ltr"
+            android:textDirection="ltr"
             app:popupTheme="@style/Theme.Qviewer.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -64,18 +79,22 @@
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layoutDirection="ltr"
+        android:textDirection="ltr"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider">
-        android:isScrollContainer="true"
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_questionLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
 
+            android:layout_height="wrap_content"
             android:layoutDirection="ltr"
             android:paddingBottom="120dp"
+            android:textDirection="ltr"
             tools:context=".Questions">
 
 
@@ -85,7 +104,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
+                android:gravity="left"
+                android:layoutDirection="ltr"
+                android:paddingEnd="20dp"
                 android:text="TextView"
+                android:textDirection="ltr"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/im_quest" />
 
@@ -95,6 +118,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="12dp"
+                android:foregroundGravity="left"
+                android:gravity="start"
+                android:layoutDirection="ltr"
+                android:textDirection="ltr"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_quest">
 
@@ -102,31 +129,48 @@
                     android:id="@+id/radioButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="RadioButton" />
+                    android:layout_gravity="left"
+                    android:gravity="left"
+                    android:layoutDirection="ltr"
+                    android:paddingEnd="16dp"
+                    android:text="RadioButton"
+                    android:textDirection="ltr" />
 
                 <RadioButton
                     android:id="@+id/radioButton2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="RadioButton" />
+                    android:layoutDirection="ltr"
+                    android:paddingEnd="16dp"
+                    android:text="RadioButton"
+                    android:textDirection="ltr" />
 
                 <RadioButton
                     android:id="@+id/radioButton3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="RadioButton" />
+                    android:layoutDirection="ltr"
+                    android:paddingEnd="16dp"
+                    android:text="RadioButton"
+                    android:textDirection="ltr" />
 
                 <RadioButton
                     android:id="@+id/radioButton4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="RadioButton" />
+                    android:layoutDirection="ltr"
+                    android:paddingEnd="16dp"
+                    android:text="RadioButton"
+                    android:textDirection="ltr" />
 
                 <RadioButton
                     android:id="@+id/radioButton5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="RadioButton" />
+                    android:layoutDirection="ltr"
+                    android:paddingEnd="16dp"
+                    android:text="RadioButton"
+                    android:textDirection="ltr" />
 
             </RadioGroup>
 
@@ -136,8 +180,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:paddingEnd="8dp"
+                android:gravity="left"
+                android:layoutDirection="ltr"
+                android:paddingEnd="20dp"
+                android:paddingBottom="20dp"
                 android:text="TextView"
+                android:textDirection="ltr"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/im_explain" />
 
@@ -148,15 +196,16 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_next" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_showAnswer" />
 
             <Button
                 android:id="@+id/btn_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
+                android:layout_marginStart="250dp"
+                android:layout_marginTop="8dp"
                 android:text="Next"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/radioGroup"
                 app:layout_constraintTop_toBottomOf="@+id/tv_indicator" />
 
             <TextView
@@ -164,7 +213,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="50dp"
+                android:layoutDirection="ltr"
+                android:textDirection="ltr"
                 android:textSize="24sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
@@ -179,10 +231,24 @@
                 android:id="@+id/btn_prev"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="60dp"
+                android:layout_marginStart="50dp"
+                android:layout_marginEnd="100dp"
                 android:text="Previous"
                 app:layout_constraintEnd_toStartOf="@+id/btn_next"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/btn_next" />
+
+            <Button
+                android:id="@+id/btn_showAnswer"
+                style="@style/Widget.Material3.Button.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Show Answer"
+                android:textSize="10sp"
+                app:layout_constraintStart_toEndOf="@+id/btn_prev"
+                app:layout_constraintTop_toBottomOf="@+id/btn_prev"
+                app:rippleColor="#B38585" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
@@ -190,7 +256,7 @@
     <View
         android:id="@+id/divider"
         android:layout_width="409dp"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="4dp"
