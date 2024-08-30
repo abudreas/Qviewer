@@ -1,10 +1,12 @@
 package com.abudreas.qviewer
 
 
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteDatabase.openDatabase
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -32,30 +34,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (ContextCompat.checkSelfPermission(
-                this,
-                "android.permission.WRITE_EXTERNAL_STORAGE"
-            ) != PERMISSION_GRANTED ||
+        Toast.makeText(this, this.applicationInfo.dataDir, Toast.LENGTH_LONG).show()
+        if (
             ContextCompat.checkSelfPermission(
                 this,
                 "android.permission.READ_EXTERNAL_STORAGE"
             ) != PERMISSION_GRANTED
         ) {
+
             requestPermissions(
                 arrayOf(
-                    "android.permission.WRITE_EXTERNAL_STORAGE",
+
                     "android.permission.READ_EXTERNAL_STORAGE"
                 ), 0
             )
-        } else if (ContextCompat.checkSelfPermission(
-                this,
-                "android.permission.WRITE_EXTERNAL_STORAGE"
-            ) == PERMISSION_DENIED ||
+        } else if (
             ContextCompat.checkSelfPermission(
                 this,
                 "android.permission.READ_EXTERNAL_STORAGE"
             ) == PERMISSION_DENIED
         ) {
+            AlertDialog.Builder(this).setTitle("ERROR").setMessage("Pleas capture the screen and send it to Ammar \n Permission is not granted to access  files in your device \n " + android.os.Build.VERSION.SDK_INT.toString()).show()
+
             return
         }
         if (  android.os.Build.VERSION.SDK_INT > 29 && ! Environment.isExternalStorageManager()) {
@@ -72,7 +72,10 @@ class MainActivity : AppCompatActivity() {
         }
         setSupportActionBar(findViewById(R.id.toolbar2))
 
-
+    if (getSharedPreferences("file_name", AppCompatActivity.MODE_PRIVATE).getString("file_name","") ==""){
+       val tv : TextView =this.findViewById(R.id.tv_noDB)
+        tv.visibility = View.VISIBLE
+    }
 
 
     }
@@ -80,13 +83,14 @@ class MainActivity : AppCompatActivity() {
     private fun startIt() {
         //check sqlite file
 
-        sqlitePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/sqlite.db"
+       // sqlitePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/sqlite.db"
+       /* sqlitePath = getSharedPreferences("file_name", AppCompatActivity.MODE_PRIVATE).getString("file_name","").toString()
         val file = File(sqlitePath)
-        if (!file.exists()){
+        if (!file.exists() || !file.canRead()){
             sqlitePath =""
-            Toast.makeText(this, "No data base file found in download folder, please download 'sqlite.db'", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "No data base file found, please download 'sqlite.db' and select it from the menu", Toast.LENGTH_LONG).show()
             return
-        }
+        }*/
         // Create an ArrayAdapter using the string array and a default spinner layout
         if (!loadSql()) return
 
@@ -102,7 +106,8 @@ class MainActivity : AppCompatActivity() {
                 val ct = loadCatg(s.toString())
                 createCatgList(loadStat(s.toString(), ct), s.toString())
                 createRecycle()
-                getSharedPreferences("Spinner_pos", MODE_PRIVATE).edit().putInt("Spinner_pos", pos)
+                this@MainActivity.getSharedPreferences("Spinner_pos", MODE_PRIVATE)
+                    .edit().putInt("Spinner_pos", pos)
                     .apply()
             }
 
@@ -149,16 +154,31 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (sqlitePath=="") return
+        if (sqlitePath=="" /*|| !File(sqlitePath).canRead()*/) return
         wrongly = false
         unAttemp = false
         val spinner: Spinner = this.findViewById(R.id.spinner)
         this.findViewById<CheckBox>(R.id.cb_Wrongly).isChecked = false
         this.findViewById<CheckBox>(R.id.cb_unattempted).isChecked = false
-        val s = tableNames[spinner.selectedItemPosition]
+        if (sqlitePath != getSharedPreferences("file_name", AppCompatActivity.MODE_PRIVATE)
+                .getString("file_name","").toString()){
+            startIt()
+            getSharedPreferences("file_name", AppCompatActivity.MODE_PRIVATE).edit().putString("file_name", sqlitePath)
+                .apply()
+            val tv : TextView =this.findViewById(R.id.tv_noDB)
+            tv.visibility = View.GONE
+            return
+        }
+        if(tableNames.size >0) {
+            var s = tableNames[0]
+            if (spinner.selectedItemPosition >= 0) {
+                s = tableNames[spinner.selectedItemPosition]
+            }
+
         val ct = loadCatg(s.toString())
         createCatgList(loadStat(s.toString(), ct), s.toString())
         createRecycle()
+    }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -206,7 +226,7 @@ class MainActivity : AppCompatActivity() {
             AlertDialog.Builder(this).setTitle("About").setMessage(getString(R.string.About)).show()
             true
         }
-        R.id.fontSize -> {
+        R.id.Reset -> {
             val spinner: Spinner = this.findViewById(R.id.spinner)
             AlertDialog.Builder(this).setTitle("Warning")
                 .setMessage("Do you want to reset all your progress on \n  '${spinner.selectedItem.toString()}' ?")
@@ -216,7 +236,11 @@ class MainActivity : AppCompatActivity() {
                 .show()
             true
         }
-
+        R.id.Select_db -> {
+            val intent = Intent(this,File_Select::class.java)
+            this.startActivity(intent)
+            true
+        }
         else -> {
             // If we got here, the user's action was not recognized.
             // Invoke the superclass to handle it.
@@ -227,7 +251,7 @@ class MainActivity : AppCompatActivity() {
     private fun reset() {
         val spinner: Spinner = this.findViewById(R.id.spinner)
         try {
-            val db = SQLiteDatabase.openDatabase(sqlitePath, null, MODE_PRIVATE)
+            val db: SQLiteDatabase = openOrCreateDatabase(DB_Name,  MODE_PRIVATE,null)
             var sql = "UPDATE `${tableNames[spinner.selectedItemPosition]}` SET solved = '0'"
             db.execSQL(sql)
             sql = "SELECT TableInfo FROM `${tableNames[spinner.selectedItemPosition]}` WHERE ID = 1"
@@ -262,7 +286,7 @@ class MainActivity : AppCompatActivity() {
         var sql = "SELECT name FROM sqlite_master WHERE type='table'"
         var db: SQLiteDatabase
         try {
-            db = SQLiteDatabase.openDatabase(sqlitePath, null, MODE_PRIVATE)
+            db = openOrCreateDatabase(DB_Name, Context.MODE_PRIVATE,null)
 
 
             //  val cmd : Unit = con.execSQL(sql)
@@ -273,7 +297,7 @@ class MainActivity : AppCompatActivity() {
             val listOfLables = arrayListOf<String>()
             do {
                 val reslt = query.getString(0)
-                if (reslt != "android_metadata") {
+                if (reslt != "android_metadata" && reslt != "qviewer") {
                     sql = "SELECT TableInfo FROM $reslt WHERE ID = 1"
                     val tableInfo = db.rawQuery(sql, null)
                     tableInfo.moveToFirst()
@@ -297,7 +321,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loadCatg(tableName: String): Array<String> {
-        val db: SQLiteDatabase = SQLiteDatabase.openDatabase(sqlitePath, null, MODE_PRIVATE)
+        val db: SQLiteDatabase = openOrCreateDatabase(DB_Name,  MODE_PRIVATE,null)
         var sql = "SELECT DISTINCT catg FROM `$tableName`"
         val query = db.rawQuery(sql, null)
         query.moveToFirst()
@@ -315,7 +339,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loadStat(tableName: String, catg: Array<String>): Array<Array<String>> {
-        val db: SQLiteDatabase = SQLiteDatabase.openDatabase(sqlitePath, null, MODE_PRIVATE)
+        val db: SQLiteDatabase = openOrCreateDatabase(DB_Name,  MODE_PRIVATE,null)
         var query: Cursor
         val arrTable = Array(catg.size) {
             Array(4) { _ -> "" }
@@ -379,10 +403,11 @@ class MainActivity : AppCompatActivity() {
         public var wrongly = false
         public var unAttemp = false
         public var sqlitePath = ""//"/storage/emulated/0/Download/sqlite.db"
+        var DB_Name = "Sqlite.db"
         fun proseInfo(theInfo: String, theOpt: String, setValue: String = ""): String {
             var found = false
             var cnt = 0
-            var arr = theInfo.toCharArray()
+            val arr = theInfo.toCharArray()
             var s = ""
             for (i in arr.indices) {
                 if ((arr[i] == "*".toCharArray()[0]) && !found) {

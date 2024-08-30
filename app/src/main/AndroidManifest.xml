@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.abudreas.qviewer">
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"  />
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" /-->
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /-->
+
     <application
+        android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,17 +17,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
         android:theme="@style/Theme.Qviewer.NoActionBar"
-        android:protectionLevel="signature"
-        tools:targetApi="31">
-
+        tools:targetApi="33">
+        <activity
+            android:name=".File_Select"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.Qviewer.NoActionBar"/>
         <activity
             android:name=".Questions"
             android:exported="false"
             android:label="@string/title_activity_questions"
-            android:theme="@style/Theme.Qviewer.NoActionBar"
-            android:parentActivityName=".MainActivity"/>
+            android:launchMode="singleInstance"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.Qviewer.NoActionBar" />
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleInstance"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

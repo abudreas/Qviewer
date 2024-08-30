@@ -2,6 +2,7 @@ package com.abudreas.qviewer
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteDatabase.openDatabase
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -31,10 +32,7 @@ class Questions : AppCompatActivity() {
         setContentView(R.layout.activity_questions)
 
         //imFactor = this.findViewById<ConstraintLayout>(R.id.)
-        //Setup Action bar
-        setSupportActionBar(findViewById(R.id.toolbar))
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        //this.setActionBar(actionBar)
+
 
          val btnNext = this.findViewById<Button>(R.id.btn_next)
        val intent = intent
@@ -43,6 +41,12 @@ class Questions : AppCompatActivity() {
          Toast.makeText(this, "No Question", Toast.LENGTH_SHORT).show()
          return
      }
+        //Setup Action bar
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = MainActivity.proseInfo(tableInfo,"info")+ " || "+ category
+        supportActionBar?.subtitle=catgModifier
+        //this.setActionBar(actionBar)
        showNextQuest()
         //actionBar.title = category
        btnNext.setOnClickListener {
@@ -97,8 +101,7 @@ class Questions : AppCompatActivity() {
         val tn :TextView=this.findViewById(R.id.tv_ofTotal)
         tn.text="of " + questList.size.toString()
         sessionStart = true
-        supportActionBar?.title = MainActivity.proseInfo(tableInfo,"info")+ " || "+ category
-        supportActionBar?.subtitle=catgModifier
+
         // set up font size
         val fonSize = getSharedPreferences("Seek_pos", MODE_PRIVATE).getInt("Seek_pos",0)
         val tv = this.findViewById<ConstraintLayout>(R.id.cl_questionLayout)
@@ -184,8 +187,8 @@ class Questions : AppCompatActivity() {
         val tvCorrect:TextView = this.findViewById(R.id.tv_indicator)
         if (answer == null ||questList[showCounter].Answer !="" ) return false
         if (questList[showCounter].check(answer.text.toString())) {
-        this.findViewById<TextView>(R.id.tv_percent).text ="Correct = "+ calculatePercent(true).toString() +" %"
-           tvCorrect.setTextColor(getColor(android.R.color.holo_green_dark))
+            this.findViewById<TextView>(R.id.tv_percent).text ="Correct = "+ calculatePercent(true).toString() +" %"
+            tvCorrect.setTextColor(getColor(android.R.color.holo_green_dark))
             tvCorrect.text="Correct !"
             saveAnswer(true)
         } else{
@@ -239,24 +242,24 @@ class Questions : AppCompatActivity() {
         val radGroup :RadioGroup= this.findViewById(R.id.radioGroup)
         val answer = questList[showCounter].Answer
 
-            if (answer == ""){
-                for (r in radGroup.children){
-                    r.setBackgroundResource(0)
-                }
-                return
-            }
+        if (answer == ""){
             for (r in radGroup.children){
-                val a:RadioButton = this.findViewById(r.id)
-                if (questList[showCounter].check(a.text.toString())){
-                    a.setBackgroundResource(R.drawable.correct)
-
-                }else if (a.text.toString() == questList[showCounter].Answer && ! questList[showCounter].check(a.text.toString()) ) {
-                    a.setBackgroundResource(R.drawable.wrong)
-
-                }else{
-                    a.setBackgroundResource(0)
-                }
+                r.setBackgroundResource(0)
             }
+            return
+        }
+        for (r in radGroup.children){
+            val a:RadioButton = this.findViewById(r.id)
+            if (questList[showCounter].check(a.text.toString())){
+                a.setBackgroundResource(R.drawable.correct)
+
+            }else if (a.text.toString() == questList[showCounter].Answer && ! questList[showCounter].check(a.text.toString()) ) {
+                a.setBackgroundResource(R.drawable.wrong)
+
+            }else{
+                a.setBackgroundResource(0)
+            }
+        }
         val tvExplain = this.findViewById<TextView>(R.id.tv_explain)
         val imExplain = this.findViewById<ImageView>(R.id.im_explain)
         tvExplain.isVisible = questList[showCounter].Answer != ""
@@ -266,13 +269,14 @@ class Questions : AppCompatActivity() {
         TableName = tableName
         category = catg
         var sql = "SELECT * FROM `$tableName`"
-        val db:SQLiteDatabase = SQLiteDatabase.openDatabase(MainActivity.sqlitePath,null,MODE_PRIVATE)
+        val db: SQLiteDatabase = openOrCreateDatabase(MainActivity.DB_Name,  MODE_PRIVATE,null)
 
         var query:Cursor
         val sql2 = "SELECT `TableInfo` FROM $TableName WHERE `ID` = 1"
         query= db.rawQuery(sql2,null)
         query.moveToFirst()
         tableInfo = query.getString(0)
+        query.close()
         if(catg!="All Questions")  sql+= " WHERE `catg` = '$catg'"
 
         if (MainActivity.wrongly){
@@ -292,14 +296,15 @@ class Questions : AppCompatActivity() {
 
         }
 
-            showCounter = MainActivity.proseInfo(tableInfo, "$category||$catgModifier").toIntOrNull()?:0
+        showCounter = MainActivity.proseInfo(tableInfo, "$category||$catgModifier").toIntOrNull()?:0
 
 
 
-         query = db.rawQuery(sql,null)
+        query = db.rawQuery(sql,null)
         query.moveToFirst()
        if (query.count == 0) {
            //this.finishActivity(0)
+           query.close()
            finish()
            return false
        }
@@ -310,17 +315,17 @@ class Questions : AppCompatActivity() {
         var q12:String
 
         do {
-            if (query.getType(6)!=3){
+            if (query.getType(6)!= Cursor.FIELD_TYPE_STRING){
                 q6 = ""
             }else{
                 q6= query.getString(6)
             }
-            if (query.getType(11)!=3){
+            if (query.getType(11)!= Cursor.FIELD_TYPE_STRING){
                 q11 = ""
             }else{
                 q11= query.getString(11)
             }
-            if (query.getType(12)!=3){
+            if (query.getType(12)!= Cursor.FIELD_TYPE_STRING){
                 q12 = ""
             }else{
                 q12= query.getString(12)
@@ -346,12 +351,12 @@ class Questions : AppCompatActivity() {
         var a = "1"
         if (b) a = "2"
         val sql = "UPDATE `$TableName` SET solved =$a WHERE ID =${questList[showCounter].id.toString()}"
-       val db:SQLiteDatabase = SQLiteDatabase.openDatabase(MainActivity.sqlitePath,null,MODE_PRIVATE)
+        val db: SQLiteDatabase = openOrCreateDatabase(MainActivity.DB_Name,  SQLiteDatabase.OPEN_READWRITE,null)
         db.execSQL(sql)
         db.close()
     }
     fun saveProgress(){
-       val db:SQLiteDatabase = SQLiteDatabase.openDatabase(MainActivity.sqlitePath,null,MODE_PRIVATE)
+        val db: SQLiteDatabase = openOrCreateDatabase(MainActivity.DB_Name,  SQLiteDatabase.OPEN_READWRITE,null)
         tableInfo = MainActivity.proseInfo(tableInfo,category+"||"+catgModifier,showCounter.toString())
         val sql = "UPDATE `$TableName` SET TableInfo = '$tableInfo' WHERE ID = 1"
         db.execSQL(sql)

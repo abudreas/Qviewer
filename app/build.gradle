@@ -12,14 +12,14 @@ android {
             keyAlias 'key1'
         }
     }
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.abudreas.qviewer"
-        minSdk 21
-        targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        minSdk 23
+        targetSdk 33
+        versionCode 3
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -40,6 +40,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.abudreas.qviewer'
 }
 
 dependencies {
