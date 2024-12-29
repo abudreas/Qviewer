@@ -100,6 +100,7 @@ class File_Select : AppCompatActivity() {
             val query = db.rawQuery(sql,null)
             query.moveToFirst()
             val info = query.getString(0)
+            query.close()
             fileDesc = file_description(MainActivity.proseInfo(info,"title"),MainActivity.proseInfo(info,"description"),MainActivity.proseInfo(info,"ver").toInt(),file.absolutePath)
         } catch (e : Exception){
             Log.println(Log.INFO,"Error",e.message.toString())
@@ -107,9 +108,11 @@ class File_Select : AppCompatActivity() {
         return  fileDesc
     }
     fun createRecycle() {
+
         if (filteredList.size == 0){
-            this.findViewById<TextView>(R.id.tv_wait).text ="No compatible data base file found in your device "
-            this.findViewById<TextView>(R.id.tv_wait).visibility = View.VISIBLE
+            val tvWait = this.findViewById<TextView>(R.id.tv_wait)
+            tvWait.text ="No compatible data base file found in your device "
+            tvWait.visibility = View.VISIBLE
             return
         }
         val recycler = this.findViewById<RecyclerView>(R.id.rv_fileList)

@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Toast.makeText(this, this.applicationInfo.dataDir, Toast.LENGTH_LONG).show()
+      //  Toast.makeText(this, this.applicationInfo.dataDir, Toast.LENGTH_LONG).show()
         if (
             ContextCompat.checkSelfPermission(
                 this,
@@ -258,6 +258,7 @@ class MainActivity : AppCompatActivity() {
             val query = db.rawQuery(sql, null)
             query.moveToFirst()
             var info = query.getString(0)
+            query.close()
             var label = proseInfo(info, "info")
             info = proseInfo("", "info", label)
             sql =
@@ -297,7 +298,7 @@ class MainActivity : AppCompatActivity() {
             val listOfLables = arrayListOf<String>()
             do {
                 val reslt = query.getString(0)
-                if (reslt != "android_metadata" && reslt != "qviewer") {
+                if (reslt != "android_metadata" && reslt != "qviewer" && reslt != "sqlite_sequence") {
                     sql = "SELECT TableInfo FROM $reslt WHERE ID = 1"
                     val tableInfo = db.rawQuery(sql, null)
                     tableInfo.moveToFirst()
@@ -328,7 +329,7 @@ class MainActivity : AppCompatActivity() {
         val mylst = arrayListOf<String>()
         do {
             val reslt = query.getString(0)
-            if (reslt != "android_metadata") {
+            if (reslt != "android_metadata" && reslt != "sqlite_sequence") {
                 mylst.add(reslt)
             }
         } while (query.moveToNext())
@@ -355,6 +356,7 @@ class MainActivity : AppCompatActivity() {
             query = db.rawQuery(sql, null)
             query.moveToFirst()
             arrTable[i][1] = query.getString(0)
+            query.close()
             if (catg[i] == all) {
                 sql += " WHERE "
             } else {
@@ -364,7 +366,7 @@ class MainActivity : AppCompatActivity() {
             query = db.rawQuery(sql, null)
             query.moveToFirst()
             arrTable[i][2] = query.getString(0)
-
+            query.close()
             sql = sql.replace(" <> '0'", " = '2'")
             query = db.rawQuery(sql, null)
             query.moveToFirst()

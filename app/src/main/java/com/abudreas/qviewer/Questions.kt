@@ -37,7 +37,7 @@ class Questions : AppCompatActivity() {
          val btnNext = this.findViewById<Button>(R.id.btn_next)
        val intent = intent
 
-     if(! loadQuest(intent.extras?.get("tableName").toString(),intent.extras?.get("catg").toString())){
+     if(! loadQuest(intent.extras?.getString("tableName").toString(),intent.extras?.getString("catg").toString())){
          Toast.makeText(this, "No Question", Toast.LENGTH_SHORT).show()
          return
      }
@@ -351,12 +351,12 @@ class Questions : AppCompatActivity() {
         var a = "1"
         if (b) a = "2"
         val sql = "UPDATE `$TableName` SET solved =$a WHERE ID =${questList[showCounter].id.toString()}"
-        val db: SQLiteDatabase = openOrCreateDatabase(MainActivity.DB_Name,  SQLiteDatabase.OPEN_READWRITE,null)
+        val db: SQLiteDatabase = openOrCreateDatabase(MainActivity.DB_Name,  MODE_PRIVATE,null)
         db.execSQL(sql)
         db.close()
     }
     fun saveProgress(){
-        val db: SQLiteDatabase = openOrCreateDatabase(MainActivity.DB_Name,  SQLiteDatabase.OPEN_READWRITE,null)
+        val db: SQLiteDatabase = openOrCreateDatabase(MainActivity.DB_Name,  MODE_PRIVATE,null)
         tableInfo = MainActivity.proseInfo(tableInfo,category+"||"+catgModifier,showCounter.toString())
         val sql = "UPDATE `$TableName` SET TableInfo = '$tableInfo' WHERE ID = 1"
         db.execSQL(sql)
